@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="856dee41-db2e-405d-806c-f2e635821dc5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="42fba87d-fef1-4b6f-8023-5579f5543db8" file="config\sandbox-config.yaml" />
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="e9ad4158-e3dc-4923-a9c8-9dccda518d41" basePath="/api" >
+		<http:request-connection host="worldclockapi.com" />
+	</http:request-config>
+	<flow name="httppocFlow" doc:id="b2ebae16-a6c2-4522-aebb-001963b37e5b" >
+		<http:listener doc:name="Listener" doc:id="66a83aee-8e79-4251-9e41-38c1444c1bba" config-ref="HTTP_Listener_config" path="/httppoc"/>
+		<logger level="INFO" doc:name="InputRequest" doc:id="698356d3-cac5-42ef-adb5-64436d531be1" message="test" />
+				<http:request method="GET" doc:name="WorldClockRequest" doc:id="0d9daf97-d5aa-45a2-8178-489b2d2f5782" config-ref="HTTP_Request_configuration1" path="/json/est/now" />
+		<ee:transform doc:name="Transform Message" doc:id="07abaee6-ae25-4ca1-865a-ade9f336d9d0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Transactions]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="616a662b-e2ed-43b1-b344-19d6e5afd522" message="#[payload]" />
+	</flow>
+</mule>

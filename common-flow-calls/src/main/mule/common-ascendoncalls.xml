@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="920852d6-3b83-4637-ac0e-6cbfc50fe6af" >
+		<http:request-connection host="services.sbx1.cdops.net" connectionIdleTimeout="60000"/>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="3ea8f80d-db18-4e45-943d-552555c5ff23" file="config\sandbox-config.yaml" />
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="be1f5c02-9e3b-4dc0-b01a-ba0e4bf69ca3" basePath="/api" >
+		<http:request-connection host="worldclockapi.com" />
+	</http:request-config>
+	<flow name="jarpocFlow" doc:id="9a9b3fa0-7556-4c64-b9ba-8b0cea96dc9b" >
+		<logger level="INFO" doc:name="InputRequest" doc:id="68123ea4-5b3b-4ebe-9a3e-d96545a86f8c" message="test" />
+		<http:request method="GET" doc:name="WorldClockRequest" doc:id="d5b12dc1-7b33-4dfe-bc84-b0a7b276b924" config-ref="HTTP_Request_configuration1" path="/json/est/now" />
+		<ee:transform doc:name="Transform Message" doc:id="cb05f506-3c15-4ef6-8326-ad1a7fdf0ff5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Transactions]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b8f135bf-f295-49fb-9906-4768bed2a03f" message="#[payload]"/>
+	
+</flow>
+
+</mule>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<import doc:name="Import" doc:id="381c39d6-6796-4423-9784-a3ea4de97ffe" file="common-ascendoncalls.xml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="27e323f2-24ad-4eb4-bc58-c35fba1c919d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="963e0e24-ac66-4a87-9abb-7b1d905478a3" >
+		<http:request-connection host="common-http-call.de-c1.cloudhub.io" />
+	</http:request-config>
+	<flow name="main-implementation-pocFlow" doc:id="a5d69ac1-0b31-40e7-8919-1055d766bdc9" >
+		<http:listener doc:name="Listener" doc:id="354ace30-88a6-48d0-9271-15ae2c694d08" config-ref="HTTP_Listener_config" path="/testwithjar"/>
+		<flow-ref doc:name="Flow Reference" doc:id="d1389cfd-beec-496a-a607-ecb4de147697" name="jarpocFlow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2d19165e-02ad-4bfa-8a4c-7349db267b3c" message="payoad"/>
+	</flow>
+	<flow name="main-implementation-pocFlow2" doc:id="de1e77c5-7e6c-4f8a-a800-4113bf95bfa4" >
+		<http:listener doc:name="Listener" doc:id="d04cc16f-40f0-456a-bc0a-028d24cec8f9" config-ref="HTTP_Listener_config" path="/lookuptest"/>
+		<ee:transform doc:name="Transform Message" doc:id="8d35d7a6-4021-4968-b39b-903d6eae8299" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+Mule::lookup("jarpreppocFlow",payload)
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1a375b24-f231-43e5-acb8-d887a0f86c1b" />
+	</flow>
+	<flow name="main-implementation-pocFlowhttp" doc:id="752a845e-4649-4acf-922c-cb4468ed3e6f" >
+		<http:listener doc:name="Listener" doc:id="4310fde9-e34f-4ead-9e6b-82c9df05ef25" config-ref="HTTP_Listener_config" path="/testwithoutjar"/>
+		<http:request method="GET" doc:name="Request" doc:id="798c76a2-b4e4-4c19-a8d1-6e0250bc04c3" config-ref="HTTP_Request_configuration1" path="/httppoc"/>
+		<logger level="INFO" doc:name="Logger" doc:id="66fac12d-9daf-4b7b-8db3-ec5538fceb23" message="payoad"/>
+	</flow>
+</mule>
